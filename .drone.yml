@@ -13,16 +13,21 @@ pool:
 steps:
   - name: vet
     pull: always
-    image: golang:1.19
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
     commands:
       - go vet ./...
     environment:
       GO111MODULE: on
 
+  - name: test-go-sdk
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    commands:
+      - mkdir -p .hhi-go-toolchain && cp -a /usr/lib/go/. .hhi-go-toolchain/
   - name: test
     pull: always
-    image: golang:1.19-alpine
+    image: harness0.harness.io/oci/docker_artifacts/hhi/harnessos-alpine:1
     commands:
+      - export PATH="$PWD/.hhi-go-toolchain/bin:$PATH" GOPATH=/go GOTOOLCHAIN=local
       - apk --no-cache add -U python3 python3-dev git gcc libc-dev libffi-dev openssl-dev py3-pip
       - pip3 install --no-cache-dir --upgrade pip setuptools wheel six twine
       - go test -cover ./...
@@ -66,7 +71,7 @@ pool:
 steps:
   - name: build-push
     pull: always
-    image: golang:1.19
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
     commands:
       - 'go build -v -ldflags "-X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/amd64/drone-pypi'
     environment:
@@ -79,7 +84,7 @@ steps:
 
   - name: build-tag
     pull: always
-    image: golang:1.19
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
     commands:
       - 'go build -v -ldflags "-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/amd64/drone-pypi'
     environment:
@@ -91,7 +96,7 @@ steps:
 
   - name: executable
     pull: always
-    image: golang:1.19
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
     commands:
       - ./release/linux/amd64/drone-pypi --help
 
@@ -150,7 +155,7 @@ platform:
 steps:
   - name: build-push
     pull: always
-    image: golang:1.19
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
     commands:
       - 'go build -v -ldflags "-X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/arm64/drone-pypi'
     environment:
@@ -163,7 +168,7 @@ steps:
 
   - name: build-tag
     pull: always
-    image: golang:1.19
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
     commands:
       - 'go build -v -ldflags "-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/arm64/drone-pypi'
     environment:
@@ -175,7 +180,7 @@ steps:
 
   - name: executable
     pull: always
-    image: golang:1.19
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
     commands:
       - ./release/linux/arm64/drone-pypi --help
 
