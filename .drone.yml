@@ -13,19 +13,19 @@ pool:
 steps:
   - name: vet
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - go vet ./...
     environment:
       GO111MODULE: on
 
   - name: test-go-sdk
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - mkdir -p .hhi-go-toolchain && cp -a /usr/lib/go/. .hhi-go-toolchain/
   - name: test
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/harnessos-alpine:1
+    image: harness0.harness.io/oci/docker_artifacts/hhi/harnessos-alpine:1@sha256:290a37c85b4284d2c11fa0778e5da79643d912a1f5a57d6f701b77644503b7e7
     commands:
       - export PATH="$PWD/.hhi-go-toolchain/bin:$PATH" GOPATH=/go GOTOOLCHAIN=local
       - apk --no-cache add -U python3 python3-dev git gcc glibc-dev libffi-dev openssl-dev py3-pip
@@ -73,7 +73,7 @@ pool:
 steps:
   - name: build-push
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - 'go build -v -ldflags "-X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/amd64/drone-pypi'
     environment:
@@ -86,7 +86,7 @@ steps:
 
   - name: build-tag
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - 'go build -v -ldflags "-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/amd64/drone-pypi'
     environment:
@@ -98,7 +98,7 @@ steps:
 
   - name: executable
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - ./release/linux/amd64/drone-pypi --help
 
@@ -106,6 +106,8 @@ steps:
     pull: always
     image: plugins/docker:linux-amd64
     settings:
+      pull_image: true
+      no_cache: true
       dockerfile: docker/Dockerfile.linux.amd64
       dry_run: true
       password:
@@ -122,6 +124,8 @@ steps:
     pull: always
     image: plugins/docker:linux-amd64
     settings:
+      pull_image: true
+      no_cache: true
       auto_tag: true
       auto_tag_suffix: linux-amd64
       dockerfile: docker/Dockerfile.linux.amd64
@@ -157,7 +161,7 @@ platform:
 steps:
   - name: build-push
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - 'go build -v -ldflags "-X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/arm64/drone-pypi'
     environment:
@@ -170,7 +174,7 @@ steps:
 
   - name: build-tag
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - 'go build -v -ldflags "-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/arm64/drone-pypi'
     environment:
@@ -182,7 +186,7 @@ steps:
 
   - name: executable
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10
+    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
     commands:
       - ./release/linux/arm64/drone-pypi --help
 
@@ -190,6 +194,8 @@ steps:
     pull: always
     image: plugins/docker:linux-arm64
     settings:
+      pull_image: true
+      no_cache: true
       dockerfile: docker/Dockerfile.linux.arm64
       dry_run: true
       password:
@@ -206,6 +212,8 @@ steps:
     pull: always
     image: plugins/docker:linux-arm64
     settings:
+      pull_image: true
+      no_cache: true
       auto_tag: true
       auto_tag_suffix: linux-arm64
       dockerfile: docker/Dockerfile.linux.arm64

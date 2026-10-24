@@ -1,24 +1,16 @@
-FROM harness0.harness.io/oci/docker_artifacts/hhi/harnessos-alpine:1 AS hhi-ca-certificates
-RUN apk add --no-cache 'ca-certificates>=20261020-r0'
+FROM harness0.harness.io/oci/docker_artifacts/hhi/harnessos-alpine:1@sha256:290a37c85b4284d2c11fa0778e5da79643d912a1f5a57d6f701b77644503b7e7
 
-FROM plugins/base:linux-amd64
-COPY --from=hhi-ca-certificates /etc/ssl/certs/ca-certificates.crt /etc/hhi/certs/ca-certificates.crt
-ENV SSL_CERT_FILE=/etc/hhi/certs/ca-certificates.crt SSL_CERT_DIR=/etc/hhi/certs
-
-ENV REQUESTS_CA_BUNDLE=/etc/hhi/certs/ca-certificates.crt PIP_CERT=/etc/hhi/certs/ca-certificates.crt CURL_CA_BUNDLE=/etc/hhi/certs/ca-certificates.crt
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt PIP_CERT=/etc/ssl/certs/ca-certificates.crt CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" \
   org.label-schema.name="Drone PyPi" \
   org.label-schema.vendor="Drone.IO Community" \
   org.label-schema.schema-version="1.0"
 
-RUN apk add -U ca-certificates python3 py3-pip \
-    python3-dev gcc libc-dev libffi-dev openssl-dev git && \
+RUN apk add -U ca-certificates python3 'py3-pip>=26.2.2-r0' 'py3-certifi>=2026.10.19-r0' \
+    python3-dev gcc glibc-dev libffi-dev openssl-dev git && \
     rm -rf /var/cache/apk/* && \
-    pip3 install --no-cache-dir --upgrade pip setuptools wheel six twine
+    pip3 install --break-system-packages --no-cache-dir --upgrade 'pip==26.2.2' 'certifi==2026.10.19' setuptools wheel six twine
 
 ADD release/linux/amd64/drone-pypi /bin/
 ENTRYPOINT ["/bin/drone-pypi"]
-
-# Supply the incident-patched system roots from the HHI package.
-COPY --from=hhi-ca-certificates /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
