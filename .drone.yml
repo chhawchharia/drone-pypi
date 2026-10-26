@@ -13,22 +13,17 @@ pool:
 steps:
   - name: vet
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
+    image: golang:1.26.10@sha256:672c944cfd07599b5f1bb179869270cdc94c6254e41db4d431259693cb286b82
     commands:
       - go vet ./...
     environment:
       GO111MODULE: on
 
-  - name: test-go-sdk
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
-    commands:
-      - mkdir -p .hhi-go-toolchain && cp -a /usr/lib/go/. .hhi-go-toolchain/
   - name: test
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/harnessos-alpine:1@sha256:290a37c85b4284d2c11fa0778e5da79643d912a1f5a57d6f701b77644503b7e7
+    image: golang:1.26.10-alpine@sha256:27f2d3b83cfc5803c8078f8e730af0f7c431bf067afaec8f60a36fb763187cba
     commands:
-      - export PATH="$PWD/.hhi-go-toolchain/bin:$PATH" GOPATH=/go GOTOOLCHAIN=local
-      - apk --no-cache add -U python3 python3-dev git gcc glibc-dev libffi-dev openssl-dev py3-pip
+      - apk --no-cache add -U 'ca-certificates>=20261020-r0' python3 python3-dev git gcc libc-dev libffi-dev openssl-dev py3-pip
       - python3 -m venv /tmp/pypi-test-env
       - . /tmp/pypi-test-env/bin/activate
       - pip3 install --no-cache-dir --upgrade 'pip>=26.2.2' 'certifi>=2026.10.19' setuptools wheel six twine
@@ -73,7 +68,7 @@ pool:
 steps:
   - name: build-push
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
+    image: golang:1.26.10@sha256:672c944cfd07599b5f1bb179869270cdc94c6254e41db4d431259693cb286b82
     commands:
       - 'go build -v -ldflags "-X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/amd64/drone-pypi'
     environment:
@@ -86,7 +81,7 @@ steps:
 
   - name: build-tag
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
+    image: golang:1.26.10@sha256:672c944cfd07599b5f1bb179869270cdc94c6254e41db4d431259693cb286b82
     commands:
       - 'go build -v -ldflags "-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/amd64/drone-pypi'
     environment:
@@ -98,7 +93,7 @@ steps:
 
   - name: executable
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
+    image: golang:1.26.10@sha256:672c944cfd07599b5f1bb179869270cdc94c6254e41db4d431259693cb286b82
     commands:
       - ./release/linux/amd64/drone-pypi --help
 
@@ -161,7 +156,7 @@ platform:
 steps:
   - name: build-push
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
+    image: golang:1.26.10@sha256:672c944cfd07599b5f1bb179869270cdc94c6254e41db4d431259693cb286b82
     commands:
       - 'go build -v -ldflags "-X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/arm64/drone-pypi'
     environment:
@@ -174,7 +169,7 @@ steps:
 
   - name: build-tag
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
+    image: golang:1.26.10@sha256:672c944cfd07599b5f1bb179869270cdc94c6254e41db4d431259693cb286b82
     commands:
       - 'go build -v -ldflags "-X main.version=${DRONE_TAG##v} -X main.build=${DRONE_BUILD_NUMBER}" -a -o release/linux/arm64/drone-pypi'
     environment:
@@ -186,7 +181,7 @@ steps:
 
   - name: executable
     pull: always
-    image: harness0.harness.io/oci/docker_artifacts/hhi/go:1.26.10@sha256:718fddf012b3a305e936ae9964e5a642036bcb7b4c6c0786e2f78f238d637db8
+    image: golang:1.26.10@sha256:672c944cfd07599b5f1bb179869270cdc94c6254e41db4d431259693cb286b82
     commands:
       - ./release/linux/arm64/drone-pypi --help
 

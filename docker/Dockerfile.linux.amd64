@@ -1,14 +1,14 @@
-FROM harness0.harness.io/oci/docker_artifacts/hhi/harnessos-alpine:1@sha256:290a37c85b4284d2c11fa0778e5da79643d912a1f5a57d6f701b77644503b7e7
+FROM alpine:3.19@sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1
 
-ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt PIP_CERT=/etc/ssl/certs/ca-certificates.crt CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+ENV GODEBUG=netdns=go
 
 LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" \
   org.label-schema.name="Drone PyPi" \
   org.label-schema.vendor="Drone.IO Community" \
   org.label-schema.schema-version="1.0"
 
-RUN apk add -U ca-certificates python3 'py3-pip>=26.2.2-r0' 'py3-certifi>=2026.10.19-r0' \
-    python3-dev gcc glibc-dev libffi-dev openssl-dev git && \
+RUN apk add -U 'ca-certificates>=20261020-r0' mailcap python3 py3-pip \
+    python3-dev gcc libc-dev libffi-dev openssl-dev git && \
     rm -rf /var/cache/apk/* && \
     pip3 install --break-system-packages --no-cache-dir --upgrade 'pip==26.2.2' 'certifi==2026.10.19' setuptools wheel six twine
 

@@ -1,8 +1,6 @@
 module github.com/xoxys/plugin-pypi
 
-go 1.19
-
-toolchain go1.26.10
+go 1.26.10
 
 require (
 	github.com/joho/godotenv v1.4.0
