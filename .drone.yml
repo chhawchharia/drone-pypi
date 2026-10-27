@@ -101,8 +101,6 @@ steps:
     pull: always
     image: plugins/docker:linux-amd64
     settings:
-      pull_image: true
-      no_cache: true
       dockerfile: docker/Dockerfile.linux.amd64
       dry_run: true
       password:
@@ -119,8 +117,6 @@ steps:
     pull: always
     image: plugins/docker:linux-amd64
     settings:
-      pull_image: true
-      no_cache: true
       auto_tag: true
       auto_tag_suffix: linux-amd64
       dockerfile: docker/Dockerfile.linux.amd64
@@ -189,8 +185,6 @@ steps:
     pull: always
     image: plugins/docker:linux-arm64
     settings:
-      pull_image: true
-      no_cache: true
       dockerfile: docker/Dockerfile.linux.arm64
       dry_run: true
       password:
@@ -207,8 +201,6 @@ steps:
     pull: always
     image: plugins/docker:linux-arm64
     settings:
-      pull_image: true
-      no_cache: true
       auto_tag: true
       auto_tag_suffix: linux-arm64
       dockerfile: docker/Dockerfile.linux.arm64
